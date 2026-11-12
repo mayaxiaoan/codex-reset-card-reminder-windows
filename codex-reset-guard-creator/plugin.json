@@ -18,8 +18,11 @@
           "设置重置卡不足12小时时通知我"
         ],
         "logo": "./assets/icon.png",
-        "composerIcon": "./assets/icon-nav.png"
+        "composerIcon": "./assets/icon-nav.png",
+        "websiteURL": "https://github.com/mayaxiaoan/codex-reset-card-reminder-windows"
       }
     }
-  }
+  },
+  "homepage": "https://github.com/mayaxiaoan/codex-reset-card-reminder-windows",
+  "repository": "https://github.com/mayaxiaoan/codex-reset-card-reminder-windows"
 }
