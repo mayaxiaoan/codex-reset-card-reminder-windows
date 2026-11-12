@@ -91,7 +91,7 @@ test('packaged launcher preserves MCP JSONL stdin/stdout and Unicode without ins
   const initial = await request('initialize', { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'portable-verifier', version: '1' } });
   assert.equal(initial.result.serverInfo.version, VERSION);
   assert.equal(initial.result.serverInfo.title, '重置卡防过期提醒');
-  assert.equal((await request('tools/list', {})).result.tools.length, 8);
+  assert.equal((await request('tools/list', {})).result.tools.length, 10);
   const resource = (await request('resources/list', {})).result.resources[0];
   const html = await request('resources/read', { uri: resource.uri });
   assert.match(html.result.contents[0].text, /当剩余不足以下时长时通知我/);

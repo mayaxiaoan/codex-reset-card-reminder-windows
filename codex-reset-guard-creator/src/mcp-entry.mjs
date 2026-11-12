@@ -50,6 +50,16 @@ server.registerTool('reset_guard_test_notification', {
   annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
   _meta: { ui: { visibility: ['app'] } },
 }, run('testNotification'));
+server.registerTool('reset_guard_debug_read', {
+  title: '读取 Debug 启动测试', description: '仅插件 Debug 面板读取启动通知测试开关，不发送通知。',
+  inputSchema: empty, annotations: readonly, _meta: { ui: { visibility: ['app'] } },
+}, run('readStartupDebug'));
+server.registerTool('reset_guard_debug_update', {
+  title: '设置 Debug 启动测试', description: '仅用户在插件 Debug 面板主动操作后，保存下次启动 Codex 时的通知测试开关。',
+  inputSchema: z.strictObject({ enabled: z.boolean() }),
+  annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
+  _meta: { ui: { visibility: ['app'] } },
+}, run('updateStartupDebug'));
 
 // SDK generates schemas, validates inputs/outputs, and advertises the settings capability.
 extensions.settings.register({

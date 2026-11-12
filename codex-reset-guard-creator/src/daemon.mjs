@@ -10,13 +10,24 @@ import { isCodexOpen, getCodexPresence } from './app-presence.mjs';
 import { sendWindowsNotification } from './windows-notifications.mjs';
 import { RestartNotificationTest } from './restart-test.mjs';
 import { requireWindows } from './platform.mjs';
+import { StartupDebug } from './startup-debug.mjs';
 
 requireWindows();
 
 // A local plugin worker, reached only over a named pipe. No web server or page.
 const token = randomBytes(32).toString('hex');
-let connection, engine, timer, stopping = false;
+let connection, engine, timer, debugTimer, stopping = false;
 const restartTest = new RestartNotificationTest(dataDirectory, getCodexPresence, sendWindowsNotification);
+const startupDebug = new StartupDebug(dataDirectory, getCodexPresence, sendWindowsNotification);
+// Independent of account reads: a slow or offline account request must not block the test.
+function scheduleDebug(immediate = false) {
+  clearTimeout(debugTimer);
+  if (stopping) return;
+  debugTimer = setTimeout(async () => {
+    try { await startupDebug.tick(); } catch (error) { console.error('Debug 启动通知：' + error.message); }
+    scheduleDebug();
+  }, immediate ? 0 : startupDebug.delay());
+}
 const api = { async request(method, params) {
   try {
     if (!connection) { connection = new AppServer(); await connection.connect(); }
@@ -46,6 +57,11 @@ async function dispatch(message) {
     await engine.setEnabled(message.params.enabled); schedule(true); return engine.status();
   }
   if (message.method === 'readSettings') return engine.settings();
+  if (message.method === 'readStartupDebug') return await startupDebug.status();
+  if (message.method === 'updateStartupDebug') {
+    const result = await startupDebug.setEnabled(message.params?.enabled);
+    scheduleDebug(true); return result;
+  }
   if (message.method === 'updateSettings') {
     const values = await engine.setSettings(message.params?.set);
     schedule(true); return values;
@@ -57,11 +73,13 @@ async function dispatch(message) {
     schedule(); return { test, ...engine.status() };
   }
   if (message.method === 'shutdown') {
+    startupDebug.stop(); clearTimeout(debugTimer);
     await engine.setEnabled(false);
     setTimeout(shutdown, 50); return { stopped: true };
   }
   if (message.method === 'shutdownForUpgrade') {
     engine.pauseRequested = true; engine.stopping = true;
+    startupDebug.stop(); clearTimeout(debugTimer);
     setTimeout(shutdown, 50); return { stopped: true, settingsPreserved: true };
   }
   throw new Error('未知插件方法');
@@ -86,7 +104,7 @@ const server = net.createServer(socket => {
 server.on('error', error => { console.error(error.message); process.exit(1); });
 async function shutdown() {
   if (stopping) return;
-  stopping = true; clearTimeout(timer);
+  stopping = true; clearTimeout(timer); clearTimeout(debugTimer); startupDebug.stop();
   if (engine) { engine.stopping = true; engine.pauseRequested = true; }
   connection?.close();
   try {
@@ -105,5 +123,6 @@ server.listen(pipeName, async () => {
     engine = new Engine(store, api, Date.now, isCodexOpen, sendWindowsNotification, getCodexPresence);
     await atomicWrite(join(dataDirectory, 'service.json'), { pid: process.pid, pipeName, token, version: 2 });
     schedule(true);
+    scheduleDebug(true);
   } catch (error) { console.error(error.message); await shutdown(); }
 });

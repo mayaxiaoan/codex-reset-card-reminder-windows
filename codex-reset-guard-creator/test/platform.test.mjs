@@ -47,7 +47,7 @@ test('simulated Mac MCP initialization and page access never create a worker', {
     pending.set(id, { resolve, timer }); child.stdin.write(JSON.stringify({ jsonrpc: '2.0', id, method, params }) + '\n');
   });
   const initialized = await request('initialize', { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'mac-test', version: '1.0.0' } });
-  assert.equal(initialized.result.serverInfo.version, '1.6.3');
+  assert.equal(initialized.result.serverInfo.version, '1.7.0');
   child.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) + '\n');
   const result = await request('tools/call', { name: 'reset_guard_open', arguments: {} });
   assert.ok(!result.result.isError); assert.equal(result.result.structuredContent.supported, false);
@@ -58,6 +58,9 @@ test('simulated Mac MCP initialization and page access never create a worker', {
   assert.equal(update.result.isError, true);
   const notification = await request('tools/call', { name: 'reset_guard_test_notification', arguments: {} });
   assert.equal(notification.result.isError, true);
+  for(const [name,args]of [['reset_guard_debug_read',{}],['reset_guard_debug_update',{enabled:true}]]){
+    const debug=await request('tools/call',{name,arguments:args});assert.equal(debug.result.isError,true);
+  }
   await assert.rejects(access(join(home, 'service.json')), { code: 'ENOENT' });
   await assert.rejects(access(join(home, 'state.json')), { code: 'ENOENT' });
 });

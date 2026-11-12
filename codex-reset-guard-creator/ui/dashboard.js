@@ -6,6 +6,9 @@ const $ = id => document.getElementById(id);
 const date = value => new Date(value).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
 const element = (tag, text, cls) => { const e = document.createElement(tag); e.textContent = text; if (cls) e.className = cls; return e; };
 let status, busy = false;
+let debugVisible=false,debugBusy=false,debugState=null,titleClicks=0,lastTitleClick=null;
+$('debug-panel').hidden=true;
+$('debug-trigger').disabled=false;
 const clientIsMac = /mac/i.test(navigator.userAgentData?.platform || navigator.platform || '');
 function showUnsupported(message) {
   $('platform-warning').textContent = message;
@@ -13,6 +16,7 @@ function showUnsupported(message) {
   $('app-content').hidden = true;
   $('dot').hidden = true;
   for (const id of controls) $(id).disabled = true;
+  $('debug-trigger').disabled=true;$('debug-startup-notification').disabled=true;
 }
 if (clientIsMac) showUnsupported('当前版本仅支持 Windows，暂不支持 macOS。系统通知和自动使用暂不可用。');
 function error(message) { $('error').hidden = !message; $('error').textContent = message || ''; }
@@ -21,6 +25,40 @@ async function call(name, args = {}) {
   if (result.isError) throw new Error(result.content?.filter(c => c.type === 'text').map(c => c.text).join('\n') || '插件操作失败');
   return result.structuredContent || JSON.parse(result.content.find(c => c.type === 'text').text);
 }
+function renderDebug(value){
+  if(typeof value?.enabled!=='boolean')throw new Error('Debug 设置读取失败，请重新打开面板。');
+  debugState=value;
+  $('debug-startup-notification').checked=value.enabled;
+  $('debug-startup-notification').disabled=debugBusy||clientIsMac;
+  const messages=[value.enabled?'已开启。将对每次新的 Codex 启动尝试一次测试通知。':'已关闭启动通知测试。'];
+  const last=value.lastAttempt;
+  if(last?.status==='accepted')messages.push('上次测试已提交 Windows：'+date(last.acceptedAt||last.attemptedAt)+'。是否显示横幅取决于系统通知设置。');
+  else if(last?.status==='failed')messages.push('上次测试失败：'+(last.error||'Windows 未确认接受通知')+'。本次启动不重试，下次启动再测试。');
+  else if(last?.status==='attempting')messages.push('上次发送结果尚未确认，本次启动不会重复发送。');
+  else if(last?.status==='cancelled')messages.push('上次测试在提交前已取消。');
+  $('debug-status').textContent=messages.join(' ');
+}
+$('debug-trigger').onclick=async()=>{
+  if(clientIsMac||status?.supported===false)return;
+  const now=Date.now();
+  titleClicks=lastTitleClick!==null&&now-lastTitleClick<=1000?titleClicks+1:1;
+  lastTitleClick=now;
+  if(titleClicks<7)return;
+  titleClicks=0;lastTitleClick=null;debugVisible=!debugVisible;
+  $('debug-panel').hidden=!debugVisible;
+  if(!debugVisible)return;
+  $('debug-status').textContent='正在读取测试设置…';
+  try{renderDebug(await call('reset_guard_debug_read'));}
+  catch(e){$('debug-status').textContent=e.message;$('debug-startup-notification').disabled=true;}
+};
+$('debug-startup-notification').onchange=async()=>{
+  if(debugBusy||!debugState||clientIsMac||status?.supported===false)return;
+  const enabled=$('debug-startup-notification').checked;
+  debugBusy=true;$('debug-startup-notification').disabled=true;
+  try{renderDebug(await call('reset_guard_debug_update',{enabled}));}
+  catch(e){$('debug-startup-notification').checked=debugState.enabled;$('debug-status').textContent=e.message;}
+  finally{debugBusy=false;$('debug-startup-notification').disabled=clientIsMac||status?.supported===false;}
+};
 function render(s) {
   if (!s || typeof s.notifyBefore !== 'string' || typeof s.useBefore !== 'string') return;
   status = s;

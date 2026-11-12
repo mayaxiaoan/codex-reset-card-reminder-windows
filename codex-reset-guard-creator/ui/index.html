@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>重置卡防过期提醒</title><style>/*STYLE*/</style></head>
 <body><main>
-<header><div><p class="eyebrow">CODEX · 重置卡防过期提醒</p><h1>提醒到期，及时使用<span id="dot" class="dot" hidden></span></h1></div><div class="header-actions"><button id="refresh" disabled>刷新</button><button id="test-notification" disabled>通知测试</button></div></header>
+<header><div><p class="eyebrow">CODEX · 重置卡防过期提醒</p><h1><button id="debug-trigger" class="title-trigger" type="button">重置卡防过期提醒</button><span id="dot" class="dot" hidden></span></h1></div><div class="header-actions"><button id="refresh" disabled>刷新</button><button id="test-notification" disabled>通知测试</button></div></header>
 <p id="platform-warning" class="platform-warning" role="status" hidden></p>
 <div id="app-content">
 <p class="intro">在这里管理你的重置卡。检查与自动使用仅在 Codex 客户端开着时生效。</p>
@@ -9,6 +9,13 @@
 <section class="settings" aria-label="插件设置">
   <div class="setting"><div><h2><label for="remind">当剩余不足以下时长时通知我</label></h2><p>本次打开中，同一卡片、同一时长只提醒一次；重新打开可再提醒，修改时长后按新条件检查。</p></div><select id="remind" disabled><option>24小时</option><option selected>12小时</option><option>6小时</option><option>3小时</option><option>1小时</option><option>永不</option></select></div>
   <div class="setting"><div><h2><label for="protect">当剩余不足以下时长时自动帮我使用</label></h2><p>进入所选时段后自动尝试使用；成功后不再通知，失败在过期前重试。</p></div><select id="protect" disabled><option>24小时</option><option>12小时</option><option>6小时</option><option>3小时</option><option>1小时</option><option selected>永不使用</option></select></div>
+</section>
+<section id="debug-panel" class="debug-panel" aria-label="Debug 测试" hidden>
+  <div class="debug-heading"><h2>Debug · 启动通知测试</h2><span class="debug-badge">DEBUG</span></div>
+  <label class="debug-option" for="debug-startup-notification"><span>Codex 启动时发送一次测试通知</span><input id="debug-startup-notification" type="checkbox" role="switch" disabled></label>
+  <p>开启后从下一次启动 Codex 生效，无需先打开插件页面。每次启动只测试一次，不使用重置卡。</p>
+  <p>测试开关会保存。再次连点标题 7 次仅隐藏面板，不会关闭测试。</p>
+  <p id="debug-status" role="status" aria-live="polite">正在读取测试设置…</p>
 </section>
 <p id="runtime" class="runtime">正在连接插件…</p>
 <section id="notices" class="notices" hidden><div class="notice-top"><h2 id="notice-title">到期提醒</h2><button id="ack" disabled>标记已读</button></div><div id="notice-items"></div></section>

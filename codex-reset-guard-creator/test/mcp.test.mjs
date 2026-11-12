@@ -28,10 +28,10 @@ test('SDK discovers settings and UI, rejects invalid inputs before business disp
   const initial = await request('initialize', { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'creator-contract-test', version: '1.0.0' } });
   assert.equal(initial.result.serverInfo.name, 'codex-reset-guard-creator');
   assert.equal(initial.result.serverInfo.title, '重置卡防过期提醒');
-  assert.equal(initial.result.serverInfo.version, '1.6.3');
+  assert.equal(initial.result.serverInfo.version, '1.7.0');
   assert.deepEqual(initial.result.capabilities.extensions['openai/settings'], { readTool: 'settings.read', updateTool: 'settings.update' });
   const { result: { tools } } = await request('tools/list', {});
-  assert.equal(tools.length, 8);
+  assert.equal(tools.length, 10);
   const byName = Object.fromEntries(tools.map(tool => [tool.name, tool]));
   assert.deepEqual(byName.reset_guard_open._meta['openai/ui'].entrypoints, [{ type: 'global' }]);
   assert.deepEqual(byName.reset_guard_open_in_chat._meta['openai/ui'].entrypoints, [{ type: 'thread' }]);
@@ -40,12 +40,18 @@ test('SDK discovers settings and UI, rejects invalid inputs before business disp
   assert.equal(byName['settings.update'].inputSchema.properties.set.additionalProperties, false);
   assert.equal(byName.reset_guard_set_enabled, undefined);
   assert.deepEqual(byName.reset_guard_test_notification._meta.ui.visibility, ['app']);
+  assert.deepEqual(byName.reset_guard_debug_read._meta.ui.visibility,['app']);
+  assert.deepEqual(byName.reset_guard_debug_update._meta.ui.visibility,['app']);
+  assert.equal(byName['settings.read'].outputSchema.properties.values.properties.startupDebug,undefined);
   assert.equal(byName.reset_guard_schedule_notification_test, undefined);
   for (const [name, args] of [
     ['reset_guard_set_enabled', { enabled: 'yes' }], ['settings.update', { set: { arbitrary: true } }],
     ['settings.update', { set: {} }], ['settings.update', { set: { autoProtect: 'true' } }],
     ['settings.update', { set: { useBefore: '0小时' } }], ['settings.update', { set: { notifyBefore: true } }],
     ['reset_guard_test_notification', { count: 2 }],
+    ['reset_guard_debug_read',{enabled:true}],
+    ['reset_guard_debug_update',{}],['reset_guard_debug_update',{enabled:'true'}],
+    ['reset_guard_debug_update',{enabled:true,accountId:'fake'}],
     ['reset_guard_schedule_notification_test', { delaySeconds: 0 }],
     ['reset_guard_schedule_notification_test', { delaySeconds: 60.2 }],
     ['reset_guard_schedule_notification_test', { delaySeconds: 3601 }],
@@ -54,7 +60,7 @@ test('SDK discovers settings and UI, rejects invalid inputs before business disp
     assert.ok(response.error || response.result?.isError, name + ': invalid arguments accepted');
   }
   const list = await request('resources/list', {});
-  assert.equal(list.result.resources[0].uri, 'ui://reset-guard-creator/dashboard-1.6.3.html');
+  assert.equal(list.result.resources[0].uri, 'ui://reset-guard-creator/dashboard-1.7.0.html');
   const resource = await request('resources/read', { uri: list.result.resources[0].uri });
   assert.equal(resource.result.contents[0].mimeType, 'text/html;profile=mcp-app');
   assert.match(resource.result.contents[0].text, /重置卡防过期提醒/);
@@ -64,5 +70,7 @@ test('SDK discovers settings and UI, rejects invalid inputs before business disp
   assert.match(resource.result.contents[0].text, /id="refresh"[^>]*>刷新<\/button><button id="test-notification"[^>]*>通知测试<\/button>/);
   assert.doesNotMatch(resource.result.contents[0].text, /Windows 系统通知|最近活动|id="test-now"|id="test-later"|id="events"/);
   assert.match(resource.result.contents[0].text, /id="platform-warning"/);
+  assert.match(resource.result.contents[0].text, /id="debug-panel"[^>]*hidden/);
+  assert.match(resource.result.contents[0].text, /id="debug-startup-notification"[^>]*role="switch"/);
   assert.ok(!resource.result.contents[0].text.includes('/*SCRIPT*/'));
 });
