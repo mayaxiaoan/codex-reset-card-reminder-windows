@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "codex-reset-guard-creator",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "仅支持 Windows x64。内置 Node.js，使用系统自带通知组件，按剩余时长提醒和自动使用重置卡。",
   "extensions": {
     "com.openai": {

@@ -9,7 +9,7 @@ $output=Join-Path ([IO.Path]::GetFullPath($OutputDirectory)) 'ResetGuard.Notific
 $args=@('/nologo','/target:exe','/platform:x64','/optimize+','/debug-','/utf8output',('/out:'+$output),('/win32icon:'+(Join-Path $PSScriptRoot 'notification-helper/notification-icon.ico')),
  ('/r:'+(Join-Path $metadata 'Windows.UI.winmd')),('/r:'+(Join-Path $metadata 'Windows.Data.winmd')),('/r:'+(Join-Path $metadata 'Windows.Foundation.winmd')),
  ('/r:'+(Join-Path $framework 'System.Runtime.WindowsRuntime.dll')),('/r:'+$facade.FullName),('/r:'+(Join-Path $framework 'System.Web.Extensions.dll')),
- (Join-Path $PSScriptRoot 'notification-helper/Program.cs'))
+ (Join-Path $PSScriptRoot 'notification-helper/Program.cs'),(Join-Path $PSScriptRoot 'notification-helper/NotificationPolicy.cs'))
 & (Join-Path $framework 'csc.exe') @args
 if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'notification-helper/notification-icon.png') -Destination $OutputDirectory -Force
