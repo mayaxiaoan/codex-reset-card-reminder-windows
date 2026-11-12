@@ -12,7 +12,7 @@ if ($Action -eq 'install-plugin') {
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
   & $codexPath plugin marketplace add $PSScriptRoot
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-  & $codexPath plugin add codex-reset-guard-creator@reset-guard-creator-local
+  & $codexPath plugin add codex-reset-guard-creator@centurygame-plugins
   exit $LASTEXITCODE
 }
 & $launcher -Mode cli -Action $Action
