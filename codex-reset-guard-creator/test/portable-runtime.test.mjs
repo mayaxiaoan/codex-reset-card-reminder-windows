@@ -44,7 +44,7 @@ test('offline cold start works without Node/.NET on PATH, despite incompatible s
   assert.ok((await realpath(info.runtimeRoot)).startsWith(await realpath(env.RESET_GUARD_RUNTIME_CACHE)));
   // System notification validation must work without any installed modern .NET runtime.
   const native = await new Promise((resolve, reject) => {
-    const child = spawn(info.notificationHost, ['-NoLogo','-NoProfile','-NonInteractive','-STA','-ExecutionPolicy','Bypass','-File',info.notificationScript,'-Mode','validate'], { windowsHide: true, env, stdio: ['pipe', 'pipe', 'pipe'] });
+    const child = spawn(info.notificationExecutable, ['--validate'], { windowsHide: true, env, stdio: ['pipe', 'pipe', 'pipe'] });
     let out = '', err = ''; child.on('error', reject); child.stdout.on('data', d => { out += d; }); child.stderr.on('data', d => { err += d; });
     child.on('close', code => resolve({ code, out, err }));
     child.stdin.end(JSON.stringify({ title: '离线验证', body: '不发送通知', tag: 'validation-only' }));

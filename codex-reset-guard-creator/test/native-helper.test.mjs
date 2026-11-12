@@ -2,11 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import {systemPowerShell,notificationArguments} from '../src/windows-notifications.mjs';
-const script=fileURLToPath(new URL('../notification-helper/notify.ps1',import.meta.url));
+
+const script=fileURLToPath(new URL('../notification-helper/windows-x64/ResetGuard.Notifications.exe',import.meta.url));
 function validate(payload) {
   return new Promise((resolve, reject) => {
-    const child = spawn(systemPowerShell(), notificationArguments(script,'validate'), { windowsHide: true, stdio: ['pipe','pipe','pipe'] });
+    const child = spawn(script, ['--validate'], { windowsHide: true, stdio: ['pipe','pipe','pipe'] });
     let out = '', err = '';
     child.stdout.setEncoding('utf8'); child.stderr.setEncoding('utf8');
     child.stdout.on('data', data => { out += data; }); child.stderr.on('data', data => { err += data; });
