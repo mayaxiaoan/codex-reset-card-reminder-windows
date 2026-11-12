@@ -14,9 +14,16 @@ try {
     [Environment]::SetEnvironmentVariable('NODE_OPTIONS', $null, 'Process')
     [Environment]::SetEnvironmentVariable('NODE_PATH', $null, 'Process')
     $env:RESET_GUARD_RUNTIME_ROOT = $runtimeRoot
+    # Release the versioned install directory so Windows can refresh its cache.
+    $workerDirectory = if ($env:RESET_GUARD_CREATOR_HOME) { $env:RESET_GUARD_CREATOR_HOME } else { Join-Path ([Environment]::GetFolderPath('UserProfile')) 'Documents/Codex/ResetGuardCreator' }
+    $workerDirectory = [IO.Path]::GetFullPath($workerDirectory)
+    [IO.Directory]::CreateDirectory($workerDirectory) | Out-Null
+    $env:RESET_GUARD_CREATOR_HOME = $workerDirectory
+    Set-Location -LiteralPath $workerDirectory
+    [Environment]::CurrentDirectory = $workerDirectory
     if ($Mode -eq 'runtime-info') {
         $nodeVersion = & $nodePath --version
-        [Console]::Out.WriteLine((@{ runtimeRoot=$runtimeRoot; nodeVersion=$nodeVersion; notificationExecutable=(Join-Path $pluginRoot 'notification-helper/windows-x64/ResetGuard.Notifications.exe') } | ConvertTo-Json -Compress))
+        [Console]::Out.WriteLine((@{ runtimeRoot=$runtimeRoot; nodeVersion=$nodeVersion; workingDirectory=$workerDirectory; notificationExecutable=(Join-Path $pluginRoot 'notification-helper/windows-x64/ResetGuard.Notifications.exe') } | ConvertTo-Json -Compress))
         exit 0
     }
     $entry = Join-Path $pluginRoot $(if ($Mode -eq 'cli') { 'src/cli.mjs' } else { 'src/mcp.mjs' })
@@ -25,7 +32,7 @@ try {
     $startInfo.Arguments = '"' + $entry + '"' + $(if ($Mode -eq 'cli') { ' ' + $Action } else { '' })
     $startInfo.UseShellExecute = $false
     $startInfo.CreateNoWindow = $true
-    $startInfo.WorkingDirectory = $pluginRoot
+    $startInfo.WorkingDirectory = $workerDirectory
     $startInfo.RedirectStandardInput = $true
     $startInfo.RedirectStandardOutput = $true
     $startInfo.RedirectStandardError = $true
