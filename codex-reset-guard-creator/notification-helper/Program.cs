@@ -12,8 +12,8 @@ using System.Xml.Linq;
 using Microsoft.Win32;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
-[assembly:System.Reflection.AssemblyVersion("1.6.1.0")]
-[assembly:System.Reflection.AssemblyFileVersion("1.6.1.0")]
+[assembly:System.Reflection.AssemblyVersion("1.6.2.0")]
+[assembly:System.Reflection.AssemblyFileVersion("1.6.2.0")]
 [assembly:System.Reflection.AssemblyTitle("重置卡防过期提醒通知")]
 [assembly:System.Reflection.AssemblyProduct("重置卡防过期提醒")]
 
@@ -21,7 +21,7 @@ using Windows.UI.Notifications;
 // No PowerShell child process, downloader, or modern .NET runtime is used.
 internal static class Program {
  private const string AppId="Codex.ResetGuard.Creator.Notifications";
- private const string PluginLink="codex://plugins/codex-reset-guard-creator@reset-guard-creator-local";
+ private const string PluginLink="codex://plugins/codex-reset-guard-creator@centurygame-plugins";
  private static readonly JavaScriptSerializer Json=new JavaScriptSerializer {MaxJsonLength=16384,RecursionLimit=8};
  public class Payload {public string Title {get;set;} public string Body {get;set;} public string Tag {get;set;}}
  [DllImport("shell32.dll",CharSet=CharSet.Unicode)]private static extern int SetCurrentProcessExplicitAppUserModelID(string id);
