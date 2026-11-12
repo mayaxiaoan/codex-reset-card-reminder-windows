@@ -1,6 +1,6 @@
 # 重置卡防过期提醒
 
-Codex Windows x64 插件，版本 **1.6.1**。按剩余时长通知，并可选择自动使用重置卡。
+Codex Windows x64 插件，版本 **1.6.2**。按剩余时长通知，并可选择自动使用重置卡。
 
 ## 安装
 
@@ -15,17 +15,22 @@ Codex Windows x64 插件，版本 **1.6.1**。按剩余时长通知，并可选�
 
 添加市场只取得轻量目录；选择“重置卡防过期提醒”安装时，再获取独立插件仓库和内置 Node.js。安装阶段仍需下载约33MiB的运行环境及少量插件文件，具体耗时取决于 GitHub 连接。完成后完全退出并重开 Codex。
 
-已有旧 Git 来源时，先移除旧的市场来源，再添加上述新来源。插件内部身份不变，移除市场来源不等于清除个人数据。不要同时注册两个同名来源。
+已有旧 Git 来源时，先移除旧的市场来源，再添加上述新来源。市场内部标识由 reset-guard-creator-local 改为 centurygame-plugins，完整安装 ID 随之变化；个人数据目录、设置和通知标识不变。已有安装请先卸载旧插件，再移除旧市场，添加新市场后安装新版。移除插件与市场不会删除 Documents/Codex/ResetGuardCreator 内的个人数据。不要同时注册两个同名来源。
 
 命令行：
 
 ```powershell
+codex plugin remove codex-reset-guard-creator@reset-guard-creator-local
 codex plugin marketplace remove reset-guard-creator-local
 codex plugin marketplace add https://github.com/mayaxiaoan/codex-centurygame-plugins.git
-codex plugin add codex-reset-guard-creator@reset-guard-creator-local
+codex plugin add codex-reset-guard-creator@centurygame-plugins
 ```
 
-全新安装不需要第一条命令。本地 ZIP 安装也可解压到固定目录，在含 manage.ps1 的目录执行 `./manage.ps1 install-plugin`，并保留该目录。
+全新安装跳过前两条旧版本移除命令。本地 ZIP 安装也可解压到固定目录，在含 manage.ps1 的目录执行 `./manage.ps1 install-plugin`，并保留该目录。
+
+## 1.6.2 的变化
+
+共享市场内部标识统一为 centurygame-plugins，中文显示名仍为 CenturyGame班用插件；通知打开链接同步指向新安装 ID。通知 EXE 保持相同实现和体积。跨仓库条目在安装前会由当前 Codex 加载器清空图标字段，默认拼图图标并非缓存错误；安装后从真实插件包读取卡片重置图标。
 
 ## 1.6.1 的变化
 
@@ -58,7 +63,7 @@ Node.js 22.23.5 仍随包分发，校验并离线解压，不修改系统 PATH�
 
 个人数据位于 `Documents/Codex/ResetGuardCreator`（可用 RESET_GUARD_CREATOR_HOME 覆盖）。不包含在发行包中。
 Node 缓存位于 `%LOCALAPPDATA%/CodexResetGuard/runtimes/<SHA256>`（可用 RESET_GUARD_RUNTIME_CACHE 覆盖）。启动器校验分卷和文件哈希，处理并发首次启动和缓存损坏，不在线下载程序。
-内部名称 codex-reset-guard-creator、市场内部名 reset-guard-creator-local、MCP 名 reset-guard-creator、通知标识 Codex.ResetGuard.Creator.Notifications 保持兼容。
+插件内部名称 codex-reset-guard-creator、MCP 名 reset-guard-creator、通知标识 Codex.ResetGuard.Creator.Notifications 及个人数据目录保持不变。市场内部名为 centurygame-plugins；通知打开入口已同步更新。
 
 ## 开发
 
