@@ -5,6 +5,8 @@
 )
 $ErrorActionPreference = 'Stop'
 $pluginRoot = $PSScriptRoot
+$null = & (Join-Path $pluginRoot 'build-notifications.ps1')
+if ($LASTEXITCODE -ne 0) { throw 'Notification helper build failed' }
 $buildRoot = [IO.Path]::GetFullPath($WorkDirectory)
 if (Test-Path -LiteralPath $buildRoot) { throw '请使用一个新的构建工作目录，避免混入旧文件。' }
 $payloadRoot = Join-Path $buildRoot 'payload'
@@ -45,10 +47,10 @@ try {
 $files = @(Get-ChildItem -LiteralPath $payloadRoot -File -Recurse | Sort-Object FullName | ForEach-Object {
     [ordered]@{ path=$_.FullName.Substring($payloadRoot.Length+1).Replace('\','/'); bytes=$_.Length; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
 })
-$manifest = [ordered]@{ schemaVersion=1; platform='win-x64'; nodeVersion=$nodeVersion.TrimStart('v'); notificationImplementation='windows-powershell-system-api'; nodeArchiveSHA256=$NodeArchiveSHA256; archiveSHA256=(Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash.ToLowerInvariant(); parts=$parts; files=$files }
+$manifest = [ordered]@{ schemaVersion=1; platform='win-x64'; nodeVersion=$nodeVersion.TrimStart('v'); notificationImplementation='windows-framework-exe'; nodeArchiveSHA256=$NodeArchiveSHA256; archiveSHA256=(Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash.ToLowerInvariant(); parts=$parts; files=$files }
 [IO.File]::WriteAllText((Join-Path $runtimeRoot 'manifest.json'), ($manifest | ConvertTo-Json -Depth 8), [Text.UTF8Encoding]::new($false))
 Copy-Item -LiteralPath (Join-Path $NodeDistribution 'LICENSE') -Destination (Join-Path $runtimeRoot 'NODE-LICENSE.txt')
-[IO.File]::WriteAllText((Join-Path $runtimeRoot 'README.md'), "# Bundled Windows x64 runtime`n`nNode.js $($manifest.nodeVersion); notifications use the system Windows PowerShell 5.1 and Windows API.`nAll runtime ZIP parts are shipped with the plugin; startup does not download files.`nThe launcher validates SHA-256 and extracts them to a per-user cache.`nNode.js license: NODE-LICENSE.txt. No modern .NET runtime is bundled.`n", [Text.UTF8Encoding]::new($false))
+[IO.File]::WriteAllText((Join-Path $runtimeRoot 'README.md'), "# Bundled Windows x64 runtime`n`nNode.js $($manifest.nodeVersion); notifications use a small EXE with the Windows-provided .NET Framework and Windows API.`nAll runtime ZIP parts are shipped with the plugin; startup does not download files.`nThe launcher validates SHA-256 and extracts them to a per-user cache.`nNode.js license: NODE-LICENSE.txt. No modern .NET runtime is bundled.`n", [Text.UTF8Encoding]::new($false))
 foreach ($oldPart in @(Get-ChildItem -LiteralPath $runtimeRoot -File -Filter 'runtime.zip.*')) {
     if ($oldPart.Name -notin @($parts | ForEach-Object { $_.file })) {
         $resolvedPart = [IO.Path]::GetFullPath($oldPart.FullName)

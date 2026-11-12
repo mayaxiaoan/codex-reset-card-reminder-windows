@@ -1,6 +1,6 @@
 # 重置卡防过期提醒
 
-Codex Windows x64 插件，版本 **1.6.0**。按剩余时长通知，并可选择自动使用重置卡。
+Codex Windows x64 插件，版本 **1.6.1**。按剩余时长通知，并可选择自动使用重置卡。
 
 ## 安装
 
@@ -27,13 +27,15 @@ codex plugin add codex-reset-guard-creator@reset-guard-creator-local
 
 全新安装不需要第一条命令。本地 ZIP 安装也可解压到固定目录，在含 manage.ps1 的目录执行 `./manage.ps1 install-plugin`，并保留该目录。
 
-## 1.6.0 的变化
+## 1.6.1 的变化
+
+1.6.0 的 PowerShell 通知快捷方式曾在实际测试中触发火绒告警，已撤回。1.6.1 更换为标准 EXE 通知入口；经过83项隔离回归测试、Defender单文件扫描，以及用户实际确认收到通知且火绒没有新告警。单次扫描和测试不代表对所有机器或未来规则的保证；不要恢复旧隔离快捷方式、关闭防护或添加白名单。
 
 市场目录与插件内容分开存储在两个新仓库，避免下载旧仓库的大文件历史。
 Node.js 22.23.5 仍随包分发，校验并离线解压，不修改系统 PATH，也不依赖已安装的 Node.js。
-通知使用 Windows 自带的 Windows PowerShell 5.1 和系统通知 API，不再分发或要求安装 .NET 8/9/10、Windows SDK 或第三方通知库。
-PowerShell 本身使用 Windows 自带的 .NET Framework；这不等于完全不使用任何 .NET。
-不修改系统执行策略，启动参数仅作用于插件子进程；企业策略限制 PowerShell、Add-Type 或系统通知时会报告失败。
+通知使用约50KB的标准 EXE，直接调用 Windows 通知 API，不再分发或要求安装 .NET 8/9/10、Windows SDK 或第三方通知库。通知快捷方式只指向该 EXE，参数固定为 --open，不启动脚本。
+通知 EXE 使用 Windows 自带的 .NET Framework；这不等于完全不使用任何 .NET。它按需启动后退出，不增加常驻服务。
+原有 Node 启动器仍使用系统 PowerShell，但通知组件和通知快捷方式不使用 PowerShell。不会修改系统执行策略或杀毒配置。企业策略限制组件或系统通知时会报告失败。
 
 ## 设置与运行
 
@@ -61,6 +63,6 @@ Node 缓存位于 `%LOCALAPPDATA%/CodexResetGuard/runtimes/<SHA256>`（可用 RE
 ## 开发
 
 构建 Node 后端和界面需要 Node.js 22+ 及 npm；运行用户不需要安装。入口源码是 src/mcp-entry.mjs 和 ui/dashboard.js；src/mcp.mjs、ui/bundle.js 为生成物。
-通知源码在 notification-helper/notify.ps1 和 Shortcut.cs，后者仅为系统快捷方式属性提供互操作；不需要 .NET SDK。
+通知源码在 notification-helper/Program.cs，通过 build-notifications.ps1 调用 Windows 自带 Framework 编译器构建，不需要现代 .NET SDK。构建产物在 notification-helper/windows-x64，仅 EXE、配置和图标三个文件。
 构建环境使用 build-runtime.ps1 的 NodeDistribution、NodeArchiveSHA256 和新的 WorkDirectory 参数，输入应为经过官方校验的 Node.js Windows x64 分发目录。
 测试用模拟账号、卡片和隔离目录，不发送真实通知或消费真实卡片。许可见 THIRD_PARTY_NOTICES.txt、THIRD_PARTY_NOTICES_NATIVE.txt 和 NODE-LICENSE.txt。
