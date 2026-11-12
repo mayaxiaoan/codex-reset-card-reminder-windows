@@ -1,0 +1,20 @@
+{
+  "name": "reset-guard-creator-local",
+  "interface": {
+    "displayName": "CenturyGame班用插件"
+  },
+  "plugins": [
+    {
+      "name": "codex-reset-guard-creator",
+      "source": {
+        "source": "local",
+        "path": "./codex-reset-guard-creator"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
