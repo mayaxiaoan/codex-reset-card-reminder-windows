@@ -7,9 +7,9 @@ import { dataDirectory } from './paths.mjs';
 
 export const notificationTag = id => createHash('sha256').update(id).digest('hex').slice(0, 32);
 export async function ensureNotificationRuntime() {
-  const source = fileURLToPath(new URL('../notification-helper/', import.meta.url));
+  const source = fileURLToPath(new URL('../notification-helper/windows-x64/', import.meta.url));
   const destination = join(dataDirectory, 'WindowsNotifications');
-  const files = ['notify.ps1', 'Shortcut.cs', 'notification-icon.ico', 'notification-icon.png'];
+  const files = ['ResetGuard.Notifications.exe', 'ResetGuard.Notifications.exe.config', 'notification-icon.png'];
   const hash = createHash('sha256');
   for (const file of files) hash.update(await readFile(join(source, file)));
   const fingerprint = hash.digest('hex');
@@ -20,15 +20,13 @@ export async function ensureNotificationRuntime() {
     for (const file of files) await cp(join(source, file), join(destination, file), { force: true });
     await writeFile(join(destination, '.build'), fingerprint);
   }
-  return join(destination, 'notify.ps1');
+  return join(destination, 'ResetGuard.Notifications.exe');
 }
-export const systemPowerShell = () => join(process.env.SystemRoot || 'C:\\Windows', 'System32/WindowsPowerShell/v1.0/powershell.exe');
-export const notificationArguments = (script, mode = 'send') => ['-NoLogo', '-NoProfile', '-NonInteractive', '-STA', '-ExecutionPolicy', 'Bypass', '-File', script, '-Mode', mode];
 export async function sendWindowsNotification({ title, body, id }) {
   if (process.platform !== 'win32') throw new Error('Windows 系统通知仅支持 Windows');
   const executable = await ensureNotificationRuntime();
   return new Promise((resolve, reject) => {
-    const child = spawn(systemPowerShell(), notificationArguments(executable), { windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
+    const child = spawn(executable, [], { windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
     let output = '', errors = '', settled = false;
     const finish = (error, result) => {
       if (settled) return; settled = true; clearTimeout(timeout);
