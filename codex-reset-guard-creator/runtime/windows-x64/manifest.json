@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "platform": "win-x64",
+  "nodeVersion": "22.23.5",
+  "notificationImplementation": "windows-powershell-system-api",
+  "nodeArchiveSHA256": "4a191082e9706866830379d577d2cc8a50c776fcd9436a8d061b063ed0d9a0e3",
+  "archiveSHA256": "bda0c8c46dcb0deba7b1726e3bed3788e5a4ceebda4dd3d9f2a6dd971fa77bb8",
+  "parts": [
+    {
+      "file": "runtime.zip.001",
+      "bytes": 20971520,
+      "sha256": "1bacd0010a73e787a4f3a27257fb902a3b4511cbf01528ad58897dcc38cd31b2"
+    },
+    {
+      "file": "runtime.zip.002",
+      "bytes": 13475520,
+      "sha256": "840180c40a2ce989c20e40958c432d69888c15aa13eb7511470b197290e7ab52"
+    }
+  ],
+  "files": [
+    {
+      "path": "node/LICENSE",
+      "bytes": 148217,
+      "sha256": "8cc9bb466b19fc7e7cc99d03e9df1132021fda8b01eea2624c58bb372dbef576"
+    },
+    {
+      "path": "node/node.exe",
+      "bytes": 87077704,
+      "sha256": "247e9693d316da9857e44990e5e11709f596f18112251b8026ec6eed80bdf38a"
+    }
+  ]
+}
