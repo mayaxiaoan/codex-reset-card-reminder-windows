@@ -1,0 +1,24 @@
+{
+  "name": "codex-reset-guard-creator",
+  "version": "1.6.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "start": "powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/launch.ps1 -Mode cli -Action start",
+    "status": "powershell.exe -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/launch.ps1 -Mode cli -Action status",
+    "probe": "node src/probe.mjs",
+    "build:ui": "node build-ui.mjs",
+    "build:server": "node build-server.mjs"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/ext-apps": "1.7.5",
+    "esbuild": "0.28.2",
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@openai/mcp-extensions": "0.2.1",
+    "zod": "4.4.3"
+  }
+}
