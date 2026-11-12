@@ -47,7 +47,7 @@ test('simulated Mac MCP initialization and page access never create a worker', {
     pending.set(id, { resolve, timer }); child.stdin.write(JSON.stringify({ jsonrpc: '2.0', id, method, params }) + '\n');
   });
   const initialized = await request('initialize', { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'mac-test', version: '1.0.0' } });
-  assert.equal(initialized.result.serverInfo.version, '1.6.2');
+  assert.equal(initialized.result.serverInfo.version, '1.6.3');
   child.stdin.write(JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }) + '\n');
   const result = await request('tools/call', { name: 'reset_guard_open', arguments: {} });
   assert.ok(!result.result.isError); assert.equal(result.result.structuredContent.supported, false);

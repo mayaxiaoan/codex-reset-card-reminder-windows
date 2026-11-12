@@ -28,7 +28,7 @@ test('SDK discovers settings and UI, rejects invalid inputs before business disp
   const initial = await request('initialize', { protocolVersion: '2025-11-25', capabilities: {}, clientInfo: { name: 'creator-contract-test', version: '1.0.0' } });
   assert.equal(initial.result.serverInfo.name, 'codex-reset-guard-creator');
   assert.equal(initial.result.serverInfo.title, '重置卡防过期提醒');
-  assert.equal(initial.result.serverInfo.version, '1.6.2');
+  assert.equal(initial.result.serverInfo.version, '1.6.3');
   assert.deepEqual(initial.result.capabilities.extensions['openai/settings'], { readTool: 'settings.read', updateTool: 'settings.update' });
   const { result: { tools } } = await request('tools/list', {});
   assert.equal(tools.length, 8);
@@ -54,7 +54,7 @@ test('SDK discovers settings and UI, rejects invalid inputs before business disp
     assert.ok(response.error || response.result?.isError, name + ': invalid arguments accepted');
   }
   const list = await request('resources/list', {});
-  assert.equal(list.result.resources[0].uri, 'ui://reset-guard-creator/dashboard-1.6.2.html');
+  assert.equal(list.result.resources[0].uri, 'ui://reset-guard-creator/dashboard-1.6.3.html');
   const resource = await request('resources/read', { uri: list.result.resources[0].uri });
   assert.equal(resource.result.contents[0].mimeType, 'text/html;profile=mcp-app');
   assert.match(resource.result.contents[0].text, /重置卡防过期提醒/);
