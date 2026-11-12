@@ -1,0 +1,25 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "codex-reset-guard-creator",
+  "version": "1.6.0",
+  "description": "仅支持 Windows x64。内置 Node.js，使用系统自带通知组件，按剩余时长提醒和自动使用重置卡。",
+  "extensions": {
+    "com.openai": {
+      "requires_local_executor": true,
+      "interface": {
+        "displayName": "重置卡防过期提醒",
+        "shortDescription": "自选时长提醒到期、自动使用重置卡",
+        "longDescription": "当前安装包仅支持 Windows x64，暂不支持 macOS。内置 Node.js，通知通过 Windows 自带组件实现，无需安装 Node.js 或现代 .NET，不影响电脑已有版本。分别选择通知和自动使用的剩余时长：24、12、6、3、1小时或永不。默认不足12小时通知，永不自动使用。同次打开同一卡片、同一时长只提醒一次；真正重开或选择新阈值可再提醒，后台重启和切回已提醒时长不重复。自动使用成功后停止提醒。正式页面只保留设置、卡片与到期提醒。",
+        "developerName": "Personal Tools",
+        "category": "Productivity",
+        "defaultPrompt": [
+          "打开重置卡防过期提醒",
+          "查看重置卡到期与自动使用计划",
+          "设置重置卡不足12小时时通知我"
+        ],
+        "logo": "./assets/icon.png",
+        "composerIcon": "./assets/icon-nav.png"
+      }
+    }
+  }
+}
