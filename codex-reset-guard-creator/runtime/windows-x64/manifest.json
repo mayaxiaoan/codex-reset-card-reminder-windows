@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "platform": "win-x64",
   "nodeVersion": "22.23.5",
-  "notificationImplementation": "windows-powershell-system-api",
+  "notificationImplementation": "windows-framework-exe",
   "nodeArchiveSHA256": "4a191082e9706866830379d577d2cc8a50c776fcd9436a8d061b063ed0d9a0e3",
   "archiveSHA256": "bda0c8c46dcb0deba7b1726e3bed3788e5a4ceebda4dd3d9f2a6dd971fa77bb8",
   "parts": [

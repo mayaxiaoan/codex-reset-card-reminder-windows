@@ -1,6 +1,4 @@
 # Bundled Windows x64 runtime
 
-Node.js 22.23.5; notifications use the system Windows PowerShell 5.1 and Windows API.
-All runtime ZIP parts are shipped with the plugin; startup does not download files.
-The launcher validates SHA-256 and extracts them to a per-user cache.
-Node.js license: NODE-LICENSE.txt. No modern .NET runtime is bundled.
+Node.js 22.23.5 is shipped in the verified ZIP parts. Startup does not download or install programs. No modern .NET runtime is bundled. The notification EXE uses only the .NET Framework and Windows APIs already provided by Windows 10/11; see notification-helper/.
+Node.js license: NODE-LICENSE.txt.
