@@ -27,7 +27,7 @@ test('notification shortcut targets only its own EXE with a fixed open argument'
 });
 test('notification payload has no modern .NET assemblies and keeps the existing identity',async()=>{
  const source=await readFile(new URL('../notification-helper/Program.cs',import.meta.url),'utf8');assert.match(source,/Codex\.ResetGuard\.Creator\.Notifications/);
- assert.match(source,/codex-reset-guard-creator@reset-guard-creator-local/);
+ assert.match(source,/codex-reset-guard-creator@centurygame-plugins/);
  const manifest=JSON.parse(await readFile(new URL('../runtime/windows-x64/manifest.json',import.meta.url)));
  assert.equal(manifest.notificationImplementation,'windows-framework-exe');
  assert.ok(manifest.files.every(f=>f.path.startsWith('node/')));
