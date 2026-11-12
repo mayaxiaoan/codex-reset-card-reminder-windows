@@ -16,7 +16,7 @@ try {
     $env:RESET_GUARD_RUNTIME_ROOT = $runtimeRoot
     if ($Mode -eq 'runtime-info') {
         $nodeVersion = & $nodePath --version
-        [Console]::Out.WriteLine((@{ runtimeRoot=$runtimeRoot; nodeVersion=$nodeVersion; notificationScript=(Join-Path $pluginRoot 'notification-helper/notify.ps1'); notificationHost=(Join-Path $env:SystemRoot 'System32/WindowsPowerShell/v1.0/powershell.exe') } | ConvertTo-Json -Compress))
+        [Console]::Out.WriteLine((@{ runtimeRoot=$runtimeRoot; nodeVersion=$nodeVersion; notificationExecutable=(Join-Path $pluginRoot 'notification-helper/windows-x64/ResetGuard.Notifications.exe') } | ConvertTo-Json -Compress))
         exit 0
     }
     $entry = Join-Path $pluginRoot $(if ($Mode -eq 'cli') { 'src/cli.mjs' } else { 'src/mcp.mjs' })
